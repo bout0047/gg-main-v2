@@ -81,18 +81,12 @@ export const uploadFile = async (bucketName: string, file: File, tags?: Tag[]): 
     const formData = new FormData();
     formData.append('file', file);
 
-    // Convert tags array to a URL-encoded string for MinIO tagging query parameter
-    let tagsQuery = '';
     if (tags && tags.length > 0) {
-        const tagsString = tags
-            .map(tag => `${encodeURIComponent(tag.key)}=${encodeURIComponent(tag.value)}`)
-            .join('&');
-        tagsQuery = `?tagging=${encodeURIComponent(tagsString)}`;
+        formData.append('tags', JSON.stringify(tags));
     }
 
     try {
-        // Send the file with tags as query parameters
-        await axios.post(`${API_URL}/files/${bucketName}/upload${tagsQuery}`, formData, {
+        await axios.post(`${API_URL}/files/${bucketName}/upload`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
