@@ -37,7 +37,7 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack, searchTerm, sel
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [showTagModal, setShowTagModal] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [selectedFileTags, setSelectedFileTags] = useState<Tag[]>([]);
 
     useEffect(() => {
@@ -55,7 +55,6 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack, searchTerm, sel
                 filesData.map(async (file) => {
                     try {
                         const metadata = await getFileMetadata(bucketName, file.name);
-                        console.log('Metadata for file', file.name, metadata); // Debugging: Check structure of metadata
                         return { ...file, tags: metadata.tags || [] };
                     } catch (err) {
                         console.error(`Error fetching metadata for ${file.name}:`, err);
@@ -73,27 +72,30 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack, searchTerm, sel
         }
     };
 
-    const handleFileSelect = (file: File) => {
-        setSelectedFile(file);
-        setSelectedFileTags([]);
-        setShowTagModal(true);
+    const handleFileSelect = (files: FileList | null) => {
+        if (files) {
+            setSelectedFiles(Array.from(files));
+            setShowTagModal(true);
+        }
     };
 
     const handleUpload = async () => {
-        if (!selectedFile || uploading) return;
+        if (!selectedFiles.length || uploading) return;
 
         try {
             setUploading(true);
             setError(null);
 
-            await uploadFile(bucketName, selectedFile, selectedFileTags);
+            for (const file of selectedFiles) {
+                await uploadFile(bucketName, file, selectedFileTags);
+            }
 
             await loadFiles();
-            setSelectedFile(null);
+            setSelectedFiles([]);
             setSelectedFileTags([]);
             setShowTagModal(false);
         } catch (err: any) {
-            setError(err.message || 'Failed to upload file');
+            setError(err.message || 'Failed to upload files');
         } finally {
             setUploading(false);
         }
@@ -134,10 +136,14 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack, searchTerm, sel
 
     const filteredFiles = files.filter((file) => {
         const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase());
+
         const matchesTags =
             selectedTags.length === 0 ||
             selectedTags.some((tag) =>
-                file.tags?.some((fileTag) => fileTag.value.toLowerCase() === tag.toLowerCase())
+                file.tags?.some((fileTag) =>
+                    (fileTag.key || fileTag.Key || '').toLowerCase().includes(tag.toLowerCase()) ||
+                    (fileTag.value || fileTag.Value || '').toLowerCase().includes(tag.toLowerCase())
+                )
             );
         return matchesSearch && matchesTags;
     });
@@ -175,16 +181,16 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack, searchTerm, sel
                     </button>
                     <h2 className="text-2xl font-bold text-gray-900">{bucketName}</h2>
                 </div>
-                <label className={`inline-flex items-center px-4 py-2 border rounded-lg shadow-sm text-sm font-medium text-white ${uploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}>
+                <label
+                    className={`inline-flex items-center px-4 py-2 border rounded-lg shadow-sm text-sm font-medium text-white ${uploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                >
                     <Upload className="h-4 w-4 mr-2" />
-                    Upload File
+                    Upload Files
                     <input
                         type="file"
                         className="hidden"
-                        onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleFileSelect(file);
-                        }}
+                        multiple
+                        onChange={(e) => handleFileSelect(e.target.files)}
                         disabled={uploading}
                     />
                 </label>
@@ -237,7 +243,7 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack, searchTerm, sel
                                                         className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
                                                     >
                                                         <TagIcon className="h-3 w-3 mr-1" />
-                                                        {`${tag.key || 'No Key'}: ${tag.value || 'No Value'}`}
+                                                        {`${(tag.key || tag.Key || 'No Key').toLowerCase()}: ${(tag.value || tag.Value || 'No Value').toLowerCase()}`}
                                                     </span>
                                                 ))
                                             ) : (
@@ -260,15 +266,15 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack, searchTerm, sel
                 </div>
             )}
 
-            {showTagModal && selectedFile && (
+            {showTagModal && selectedFiles.length > 0 && (
                 <TagSelectionModal
                     isOpen={showTagModal}
-                    fileName={selectedFile.name}
+                    fileName={selectedFiles.map((file) => file.name).join(', ')}
                     selectedTags={selectedFileTags}
                     onTagsChange={setSelectedFileTags}
                     onClose={() => {
                         setShowTagModal(false);
-                        setSelectedFile(null);
+                        setSelectedFiles([]);
                     }}
                     onConfirm={handleUpload}
                 />

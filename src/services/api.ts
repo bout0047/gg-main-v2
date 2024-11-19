@@ -11,8 +11,8 @@ const api = axios.create({
 });
 
 export interface Tag {
-    key: string;
-    value: string;
+    Key: string;
+    Value: string;
 }
 
 export interface FileData {
