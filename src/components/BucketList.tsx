@@ -4,11 +4,9 @@ import { getBuckets, createBucket } from '../services/api';
 
 interface BucketListProps {
     onSelectBucket: (bucketName: string) => void;
-    searchTerm: string;
-    selectedTags: string[];
 }
 
-const BucketList: React.FC<BucketListProps> = ({ onSelectBucket, searchTerm }) => {
+const BucketList: React.FC<BucketListProps> = ({ onSelectBucket }) => {
     const [buckets, setBuckets] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -42,10 +40,6 @@ const BucketList: React.FC<BucketListProps> = ({ onSelectBucket, searchTerm }) =
             }
         }
     };
-
-    const filteredBuckets = buckets.filter(bucket =>
-        bucket.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     if (loading) {
         return <div className="flex justify-center items-center h-64">Loading...</div>;
@@ -97,21 +91,20 @@ const BucketList: React.FC<BucketListProps> = ({ onSelectBucket, searchTerm }) =
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredBuckets.map((bucket) => (
+                        {buckets.map((bucket) => (
                             <tr key={bucket.name} className="hover:bg-gray-50">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <FolderOpen className="h-5 w-5 text-indigo-600 mr-2" />
-                                        <span className="text-sm font-medium text-gray-900">{bucket.name}</span>
+                                        <span className="text-sm font-medium text-gray-900">{bucket.name || 'N/A'}</span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {new Date(bucket.created).toLocaleDateString()}
+                                    {bucket.created ? new Date(bucket.created).toLocaleDateString() : 'N/A'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${bucket.access === 'Read/Write' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                        }`}>
-                                        {bucket.access}
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${bucket.access === 'Read/Write' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                        {bucket.access || 'N/A'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
