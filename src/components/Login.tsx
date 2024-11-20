@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Shield, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import logo from '../assets/Marjane-Emploi-Recrutement-1.webp'; // Correct the path if necessary
 
 interface LoginProps {
     onLogin: (username: string, password: string) => void;
@@ -24,10 +25,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl">
                 <div className="text-center">
-                    <div className="mx-auto h-16 w-16 bg-indigo-100 flex items-center justify-center rounded-2xl">
-                        <Shield className="h-8 w-8 text-indigo-600" />
+                    {/* Larger Marjane Logo */}
+                    <div className="flex justify-center mb-6">
+                        <img
+                            src={logo}
+                            alt="Marjane Logo"
+                            className="h-24 w-auto" // Increased height to 24 (96px)
+                        />
                     </div>
-                    <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+                    <h2 className="text-3xl font-extrabold text-gray-900">
                         Welcome Back
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">

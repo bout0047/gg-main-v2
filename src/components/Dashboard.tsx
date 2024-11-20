@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
-import { FolderOpen, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import BucketList from './BucketList';
 import FileList from './FileList';
+import logo from '../assets/Marjane-Emploi-Recrutement-1.webp'; // Corrected path
 
-interface DashboardProps {
-    onLogout: () => void;
-}
-
-const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+const Dashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const [selectedBucket, setSelectedBucket] = useState<string | null>(null);
 
     return (
         <div className="min-h-screen bg-gray-50">
             <nav className="bg-white shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
+                    <div className="flex justify-between items-center h-24"> {/* Increased height of the navbar */}
                         <div className="flex items-center">
-                            <FolderOpen className="h-8 w-8 text-indigo-600" />
-                            <span className="ml-2 text-xl font-semibold text-gray-900">
-                                Marjane Secure Storage
-                            </span>
+                            <img
+                                src={logo}
+                                alt="Marjane Logo"
+                                className="h-20 w-auto" // Adjusted height to 20 (80px) for a larger logo
+                            />
                         </div>
                         <div className="flex items-center space-x-4">
                             <button
@@ -43,6 +41,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             </main>
         </div>
     );
-}
+};
 
 export default Dashboard;
