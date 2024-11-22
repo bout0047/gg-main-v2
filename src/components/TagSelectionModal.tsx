@@ -29,10 +29,18 @@ const TagSelectionModal: React.FC<TagSelectionModalProps> = ({
         }
     };
 
+    const formatFileName = (name: string) => {
+        const files = name.split(',');
+        if (files.length > 5) {
+            return `${files.slice(0, 5).join(', ')}...`;
+        }
+        return name;
+    };
+
     return isOpen ? (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4">
-                <h2 className="text-lg font-medium">Add Tags to {fileName}</h2>
+                <h2 className="text-lg font-medium">Add Tags to {formatFileName(fileName)}</h2>
                 <div>
                     <input
                         type="text"
@@ -50,7 +58,9 @@ const TagSelectionModal: React.FC<TagSelectionModalProps> = ({
                     />
                     <button
                         onClick={handleAddTag}
-                        className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
+                        disabled={!newTagKey || !newTagValue} // Button is disabled if either field is empty
+                        className={`mt-2 w-full p-2 rounded ${newTagKey && newTagValue ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            }`}
                     >
                         Add Tag
                     </button>

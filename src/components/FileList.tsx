@@ -39,6 +39,7 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack }) => {
     const [selectedFileTags, setSelectedFileTags] = useState<Tag[]>([]);
     const [selectedFileNames, setSelectedFileNames] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [progress, setProgress] = useState<number>(0);
 
     useEffect(() => {
         loadFiles();
@@ -85,9 +86,12 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack }) => {
         try {
             setUploading(true);
             setError(null);
+            setProgress(0);
 
-            for (const file of selectedFiles) {
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
                 await uploadFile(bucketName, file, selectedFileTags);
+                setProgress(((i + 1) / selectedFiles.length) * 100);
             }
 
             await loadFiles();
@@ -98,6 +102,7 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack }) => {
             setError(err.message || 'Failed to upload files');
         } finally {
             setUploading(false);
+            setProgress(0);
         }
     };
 
@@ -179,6 +184,16 @@ const FileList: React.FC<FileListProps> = ({ bucketName, onBack }) => {
                     <button onClick={() => setError(null)} className="text-red-600 hover:text-red-800">
                         <X className="h-5 w-5" />
                     </button>
+                </div>
+            )}
+
+            {/* Upload Progress Bar */}
+            {uploading && (
+                <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
+                    <div
+                        className="bg-blue-600 h-4 rounded-full"
+                        style={{ width: `${progress}%` }}
+                    />
                 </div>
             )}
 

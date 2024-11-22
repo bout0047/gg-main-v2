@@ -2,29 +2,29 @@ import React, { useState } from 'react';
 import { LogOut } from 'lucide-react';
 import BucketList from './BucketList';
 import FileList from './FileList';
-import logo from '../assets/Marjane-Emploi-Recrutement-1.webp'; // Corrected path
+import logo from '../assets/Logo-Marjane-Group-horizontal-1---400x60pxls.png'; // Corrected path
 
 const Dashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const [selectedBucket, setSelectedBucket] = useState<string | null>(null);
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <nav className="bg-white shadow-sm">
+        <div className="min-h-screen bg-white">
+            <nav className="bg-white shadow-md">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-24"> {/* Increased height of the navbar */}
-                        <div className="flex items-center">
+                    <div className="flex items-center justify-between h-20"> {/* Adjusted height of the navbar */}
+                        <div className="flex items-center flex-grow-0"> {/* Changed flex-grow to 0 to ensure it stays to the far left */}
                             <img
                                 src={logo}
                                 alt="Marjane Logo"
-                                className="h-20 w-auto" // Adjusted height to 20 (80px) for a larger logo
+                                className="h-12 w-auto object-contain mr-4" // Reduced height for smaller logo and added margin-right to provide space
                             />
                         </div>
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={onLogout}
-                                className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition-colors duration-200"
                             >
-                                <LogOut className="h-4 w-4 mr-2" />
+                                <LogOut className="h-5 w-5 mr-2" />
                                 Logout
                             </button>
                         </div>

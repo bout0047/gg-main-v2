@@ -28,11 +28,62 @@ const BucketList: React.FC<BucketListProps> = ({ onSelectBucket }) => {
         }
     };
 
+    const validateBucketName = (name: string): string | null => {
+        const ipAddressPattern = /^\d{1,3}(\.\d{1,3}){3}$/;
+        const invalidCharactersPattern = /[^a-z0-9.-]/;
+
+        if (name.length < 3 || name.length > 63) {
+            return 'Bucket name must be between 3 and 63 characters long.';
+        }
+        if (invalidCharactersPattern.test(name)) {
+            return 'Bucket name can only contain lowercase letters, numbers, dots, and hyphens.';
+        }
+        if (name.includes('..') || name.includes('-.') || name.includes('.-')) {
+            return 'Bucket name must not contain two adjacent periods or a period adjacent to a hyphen.';
+        }
+        if (ipAddressPattern.test(name)) {
+            return 'Bucket name must not resemble an IP address.';
+        }
+        if (name.startsWith('xn--')) {
+            return 'Bucket name must not start with the prefix "xn--".';
+        }
+        if (name.endsWith('-s3alias')) {
+            return 'Bucket name must not end with the suffix "-s3alias".';
+        }
+        return null;
+    };
+
+    const suggestAlternativeName = (name: string): string => {
+        let suggestedName = name.toLowerCase().replace(/[^a-z0-9.-]/g, '');
+        suggestedName = suggestedName.replace(/\.\.|-\.|\.\-/g, '-');
+        if (suggestedName.length < 3) {
+            suggestedName = `bucket-${suggestedName}`;
+        } else if (suggestedName.length > 63) {
+            suggestedName = suggestedName.substring(0, 63);
+        }
+        if (suggestedName.match(/^\d{1,3}(\.\d{1,3}){3}$/)) {
+            suggestedName = `bucket-${suggestedName}`;
+        }
+        if (suggestedName.startsWith('xn--')) {
+            suggestedName = `bucket-${suggestedName}`;
+        }
+        if (suggestedName.endsWith('-s3alias')) {
+            suggestedName = suggestedName.replace(/-s3alias$/, '-bucket');
+        }
+        return suggestedName;
+    };
+
     const handleCreateBucket = async () => {
         const name = prompt('Enter bucket name:');
         if (name) {
+            const validationError = validateBucketName(name);
+            let bucketNameToCreate = name;
+            if (validationError) {
+                bucketNameToCreate = suggestAlternativeName(name);
+                alert(`${validationError} Automatically creating bucket with suggested name: ${bucketNameToCreate}`);
+            }
             try {
-                await createBucket(name);
+                await createBucket(bucketNameToCreate);
                 loadBuckets();
             } catch (err) {
                 setError('Failed to create bucket');
@@ -56,13 +107,13 @@ const BucketList: React.FC<BucketListProps> = ({ onSelectBucket }) => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">Storage Buckets</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Les Fichiers</h2>
                 <button
                     onClick={handleCreateBucket}
                     className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                     <Plus className="h-4 w-4 mr-2" />
-                    Create New Bucket
+                    Create New File
                 </button>
             </div>
 
@@ -71,7 +122,7 @@ const BucketList: React.FC<BucketListProps> = ({ onSelectBucket }) => {
                     <thead className="bg-gray-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Bucket Name
+                                File Name
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Created

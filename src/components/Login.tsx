@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
-import logo from '../assets/Marjane-Emploi-Recrutement-1.webp'; // Correct the path if necessary
+import logo from '../assets/Logo-Marjane-Group-horizontal-1---400x60pxls.png'; // Corrected the path if necessary
 
 interface LoginProps {
     onLogin: (username: string, password: string) => void;
@@ -25,26 +25,21 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl">
                 <div className="text-center">
-                    {/* Larger Marjane Logo */}
+                    {/* Marjane Logo with improved aspect ratio */}
                     <div className="flex justify-center mb-6">
                         <img
                             src={logo}
                             alt="Marjane Logo"
-                            className="h-24 w-auto" // Increased height to 24 (96px)
+                            className="h-20 w-auto object-contain" // Adjusted height and added object-contain to avoid stretching
                         />
                     </div>
-                    <h2 className="text-3xl font-extrabold text-gray-900">
-                        Welcome Back
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Sign in to access your secure storage
-                    </p>
+                    
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                                Username
+                                Login
                             </label>
                             <input
                                 id="username"
@@ -59,7 +54,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         </div>
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
+                                Mot de passe:
                             </label>
                             <input
                                 id="password"
