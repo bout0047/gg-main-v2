@@ -24,22 +24,6 @@ To run the MinIO App, ensure you have the following:
 
 ## Installation and Setup
 
-### Backend Setup
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd MinIOApp
-   ```
-2. Restore dependencies:
-   ```bash
-   dotnet restore
-   ```
-3. Update the `appsettings.json` file with your database connection string and MinIO credentials.
-4. Run the backend:
-   ```bash
-   dotnet run
-   ```
-
 ### Frontend Setup
 1. Navigate to the frontend directory:
    ```bash
