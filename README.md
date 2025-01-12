@@ -93,11 +93,4 @@ We welcome contributions! Please follow these steps:
 - **Metadata Issues**: Verify the metadata structure in the frontend configuration.
 - **Database Connectivity**: Ensure the database server is running and accessible.
 
-## License
-This project is licensed under the [MIT License](LICENSE).
-
-## Contact
-For questions or support, contact:
-- **Email**: support@minioapp.com
-- **GitHub Issues**: [Submit an issue](https://github.com/<repository-url>/issues)
 
